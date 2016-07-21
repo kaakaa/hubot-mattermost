@@ -7,6 +7,7 @@ catch
 class Mattermost extends Adapter
 
   send: (envelope, strings...) ->
+    @robot.logger.emergency strings
     for str in strings
       data = JSON.stringify({
         icon_url: @icon,
@@ -14,6 +15,7 @@ class Mattermost extends Adapter
         username: @robot.name,
         text: str
       })
+      @robot.logger.emergency data
       @robot.http(@url)
         .header('Content-Type', 'application/json')
         .post(data) (err, res, body) ->
@@ -56,6 +58,8 @@ class Mattermost extends Adapter
          user = @robot.brain.userForId(req.body.user_id)
          user.name = req.body.user_name
          user.room = req.body.channel_name
+         @robot.logger.emergency user
+         @robot.logger.emergency msg
          @robot.receive new TextMessage(user, msg)
          res.writeHead 200, 'Content-Type': 'text/plain'
          res.end()
